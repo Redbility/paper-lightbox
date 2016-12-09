@@ -1,0 +1,28 @@
+{
+  "name": "paper-lightbox",
+  "version": "0.0.1",
+  "authors": [
+    "Óscar Solás <oscarsolas@gmail.com>"
+  ],
+  "description": "Polymer element to launch content inside a popup",
+  "main": [
+    "paper-lightbox.html"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/oscarsolas/paper-lightbox",
+  "ignore": [
+    "bower_components",
+    "source"
+  ],
+  "keywords": [
+    "web-components",
+    "popup",
+    "lightbox",
+    "ajax"
+  ],
+  "dependencies": {
+    "polymer": "polymer/polymer#^v1.2.0",
+    "iron-icons": "PolymerElements/iron-icons#^1.0.0",
+    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.0"
+  }
+}
