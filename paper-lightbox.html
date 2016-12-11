@@ -1,11 +1,15 @@
 
 <link rel="import" href="../polymer/polymer.html"/>
 <link rel="import" href="../iron-icons/image-icons.html"/>
-<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html"/>
+<link rel="import" href="../iron-ajax/iron-ajax.html"/>
 <dom-module id="paper-lightbox">
   <template>
-    <style>:host{display:block}</style>
-    <content></content>
+    <style>:host{display:block}:host::content .paper-lightbox-popup{position:fixed;top:0;right:0;bottom:0;left:0;z-index:999}:host::content .paper-lightbox-popup_overlay{position:absolute;background-color:#000;width:100%;height:100%;opacity:.4;z-index:0}:host::content .paper-lightbox-popup_window{position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);padding:20px 25px;z-index:1;background-color:#fff}</style>
+    <iron-ajax auto="auto" url="{{ src }}" handle-as="text" on-response="_ajaxResponse"></iron-ajax>
+    <button>
+      <div></div>
+      <content></content>
+    </button>
   </template>
-  <script>(function(){Polymer({is:"paper-lightbox",behaviors:[Polymer.IronResizableBehavior],listeners:{"iron-resize":"_onResize"},ready:function(){},attached:function(){},_onResize:function(){}})}).call(this);</script>
+  <script>(function(){Polymer({is:"paper-lightbox",_createPopup:function(){var e,t,n;return t=this,e=document.createElement("div"),e.classList.add("paper-lightbox-popup"),t.window=document.createElement("div"),t.window.classList.add("paper-lightbox-popup_window"),e.appendChild(t.window),n=document.createElement("div"),n.classList.add("paper-lightbox-popup_overlay"),e.appendChild(n),t.appendChild(e)},_parseAjax:function(e){var t;return t=this,t.window.innerHTML=e},_ajaxResponse:function(e){var t;return t=this,t.ajaxResponse=e.target.lastResponse},_createAjax:function(){var e;return e=this,this._createPopup(),this._parseAjax(e.ajaxResponse),this._closePopup()},_createImage:function(){var e,t;return t=this,e=new Image,e.onload=function(){return t.window.appendChild(e)},e.src=t.getAttribute("src"),this._createPopup(),this._closePopup()},_getType:function(){var e;return e=this,e.getAttribute("type")},_launchPopup:function(){var e;switch(e=this,this._getType()){case"ajax":return e.listen(e.$$("button"),"tap","_createAjax");case"image":return e.listen(e.$$("button"),"tap","_createImage");case"inline":return console.log();case"iframe":return console.log()}},_removePopup:function(){var e,t;return e=this,t=e.querySelector(".paper-lightbox-popup"),t.remove()},_closePopup:function(){var e,t;return e=this,t=e.querySelector(".paper-lightbox-popup_overlay"),e.listen(t,"tap","_removePopup")},onAjaxContentLoaded:function(){},attached:function(){return this._launchPopup()}})}).call(this);</script>
 </dom-module>

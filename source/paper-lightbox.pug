@@ -1,11 +1,20 @@
 link(rel="import" href="../polymer/polymer.html")
 link(rel="import" href="../iron-icons/image-icons.html")
-link(rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html")
+link(rel="import" href="../iron-ajax/iron-ajax.html")
 
 dom-module(id="paper-lightbox")
 	template
 		style: include paper-lightbox.css
 
-		content
+		iron-ajax(
+			auto
+			url="{{ src }}"
+			handle-as="text"
+         on-response="_ajaxResponse"
+		)
+
+		button
+			div
+			content
 
 	script: include paper-lightbox.js
