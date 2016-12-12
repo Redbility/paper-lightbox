@@ -6,12 +6,13 @@ dom-module(id="paper-lightbox")
 	template
 		style: include paper-lightbox.css
 
-		iron-ajax(
-			auto
-			url="{{ src }}"
-			handle-as="text"
-         on-response="_ajaxResponse"
-		)
+		template(is="dom-if" if="{{ _isAjax() }}")
+			iron-ajax(
+				auto
+				url="{{ src }}"
+				handle-as="text"
+	         on-response="_ajaxResponse"
+			)
 
 		button
 			div

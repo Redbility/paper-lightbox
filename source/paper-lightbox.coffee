@@ -22,6 +22,13 @@ Polymer
 		# container.innerHTML = module.ajaxResponse
 		module.appendChild container
 
+	_isAjax: ->
+		# set vars
+		module = this
+
+		if @_getType() == 'ajax'
+			return true
+
 	_parseAjax: (content) ->
 		# set vars
 		module = this
@@ -51,14 +58,28 @@ Polymer
 		module = this
 		image = new Image()
 
+		# create popup and parse content
+		@_createPopup()
+
 		# create image
 		image.onload = ->
 			# append image after is loaded
 			module.window.appendChild image
 		image.src = module.getAttribute 'src'
 
+		# close popup event
+		@_closePopup()
+
+	_createInline: ->
+		# set vars
+		module = this
+		content = document.querySelector module.getAttribute 'src'
+
 		# create popup and parse content
 		@_createPopup()
+
+		# append cloned content
+		module.window.appendChild content.cloneNode true
 
 		# close popup event
 		@_closePopup()
@@ -81,7 +102,7 @@ Polymer
 			when 'image'
 				module.listen module.$$('button'), 'tap', '_createImage'
 			when 'inline'
-				console.log()
+				module.listen module.$$('button'), 'tap', '_createInline'
 			when 'iframe'
 				console.log()
 
