@@ -9,9 +9,15 @@ Polymer
 		container = document.createElement 'div'
 		container.classList.add 'paper-lightbox-popup'
 
+		# create close button
+		close = document.createElement 'iron-icon'
+		close.classList.add 'paper-lightbox-popup_close'
+		close.setAttribute 'icon', 'icons:close'
+
 		# create window
 		module.window = document.createElement 'div'
 		module.window.classList.add 'paper-lightbox-popup_window'
+		module.window.appendChild close
 		container.appendChild module.window
 
 		# create overlay
@@ -32,8 +38,11 @@ Polymer
 	_parseAjax: (content) ->
 		# set vars
 		module = this
+		capsule = document.createElement 'div'
+		capsule.innerHTML = content
 
-		module.window.innerHTML = content
+		[].forEach.call capsule.children, (val, key) ->
+			module.window.appendChild val
 
 	_ajaxResponse: (data) ->
 		# set vars
@@ -118,11 +127,13 @@ Polymer
 		# set vars
 		module = this
 		overlay = module.querySelector('.paper-lightbox-popup_overlay')
+		close = module.querySelector('.paper-lightbox-popup_close')
 
 		# add overlay listener
 		module.listen overlay, 'tap', '_removePopup'
+		module.listen close, 'tap', '_removePopup'
 
 	onAjaxContentLoaded: ->
 
-	attached: ->
+	ready: ->
 		@_launchPopup()
