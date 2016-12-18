@@ -28,6 +28,90 @@ Polymer
 		# container.innerHTML = module.ajaxResponse
 		module.appendChild container
 
+	_openAnimation: ->
+		# set vars
+		module = this
+		overlay = module.querySelector('.paper-lightbox-popup_overlay')
+
+		windowRect = module.window.getBoundingClientRect()
+		buttonRect = module.querySelector('button').getBoundingClientRect()
+
+		module.window.style.top = buttonRect.top + 'px'
+		module.window.style.width = buttonRect.width + 'px'
+		module.window.style.height = buttonRect.height + 'px'
+		module.window.style.left = buttonRect.left + 'px'
+		module.window.style.padding = '0'
+		module.window.style.transform = 'none'
+		overlay.style.opacity = '0'
+		[].forEach.call module.window.children, (child, key) ->
+			child.style.opacity = '0'
+
+		setTimeout (->
+			module.window.style.transition = 'all 0.3s cubic-bezier(.55,0,.1,1)'
+			module.window.style.top = windowRect.top + 'px'
+			module.window.style.width = windowRect.width + 'px'
+			module.window.style.height = windowRect.height + 'px'
+			module.window.style.left = windowRect.left + 'px'
+			module.window.style.padding = ''
+			overlay.style.transition = 'all 0.3s cubic-bezier(.55,0,.1,1)'
+			overlay.style.opacity = '0.6'
+			[].forEach.call module.window.children, (child, key) ->
+				child.style.transition = 'opacity 0.3s cubic-bezier(.55,0,.1,1)'
+		), 0
+
+		setTimeout (->
+			module.window.style.transition = ''
+			module.window.style.top = ''
+			module.window.style.width = ''
+			module.window.style.height = ''
+			module.window.style.left = ''
+			module.window.style.transform = ''
+			overlay.style.opacity = ''
+			[].forEach.call module.window.children, (child, key) ->
+				child.style.opacity = '1'
+		), 300
+
+		setTimeout (->
+			[].forEach.call module.window.children, (child, key) ->
+				child.style.opacity = ''
+				child.style.transition = ''
+		), 600
+
+	_closeAnimation: (popup) ->
+		# set vars
+		module = this
+		overlay = module.querySelector('.paper-lightbox-popup_overlay')
+
+		windowRect = module.window.getBoundingClientRect()
+		buttonRect = module.querySelector('button').getBoundingClientRect()
+
+		module.window.style.top = windowRect.top + 'px'
+		module.window.style.width = windowRect.width + 'px'
+		module.window.style.height = windowRect.height + 'px'
+		module.window.style.left = windowRect.left + 'px'
+		module.window.style.transform = 'none'
+		overlay.style.opacity = '0.6'
+		[].forEach.call module.window.children, (child, key) ->
+			child.style.transition = 'opacity 0.15s cubic-bezier(.55,0,.1,1)'
+			child.style.opacity = '0'
+
+		setTimeout (->
+			module.window.style.transition = 'all 0.3s cubic-bezier(.55,0,.1,1)'
+			module.window.style.top = buttonRect.top + 'px'
+			module.window.style.width = buttonRect.width + 'px'
+			module.window.style.height = buttonRect.height + 'px'
+			module.window.style.left = buttonRect.left + 'px'
+			module.window.style.padding = '0'
+			module.window.style.opacity = '0'
+			overlay.style.transition = 'all 0.3s cubic-bezier(.55,0,.1,1)'
+			overlay.style.opacity = '0'
+		), 0
+
+		# remove popup
+		setTimeout (->
+			popup.remove()
+		), 300
+
 	_isAjax: ->
 		# set vars
 		module = this
@@ -59,6 +143,12 @@ Polymer
 		@_createPopup()
 		@_parseAjax(module.ajaxResponse)
 
+		# add type class
+		module.window.classList.add 'paper-lightbox-popup_window-ajax'
+
+		# apply animation
+		@_openAnimation()
+
 		# close popup event
 		@_closePopup()
 
@@ -67,17 +157,24 @@ Polymer
 		module = this
 		image = new Image()
 
-		# create popup and parse content
-		@_createPopup()
-
 		# create image
 		image.onload = ->
+			# create popup and parse content
+			module._createPopup()
+
+			# add type class
+			module.window.classList.add 'paper-lightbox-popup_window-image'
+
 			# append image after is loaded
 			module.window.appendChild image
-		image.src = module.getAttribute 'src'
 
-		# close popup event
-		@_closePopup()
+			# apply animation
+			module._openAnimation()
+
+			# close popup event
+			module._closePopup()
+
+		image.src = module.getAttribute 'src'
 
 	_createInline: ->
 		# set vars
@@ -87,8 +184,14 @@ Polymer
 		# create popup and parse content
 		@_createPopup()
 
+		# add type class
+		module.window.classList.add 'paper-lightbox-popup_window-inline'
+
 		# append cloned content
 		module.window.appendChild content.cloneNode true
+
+		# apply animation
+		@_openAnimation()
 
 		# close popup event
 		@_closePopup()
@@ -120,8 +223,7 @@ Polymer
 		module = this
 		popup = module.querySelector('.paper-lightbox-popup')
 
-		# remove popup
-		popup.remove()
+		@_closeAnimation(popup)
 
 	_closePopup: ->
 		# set vars
