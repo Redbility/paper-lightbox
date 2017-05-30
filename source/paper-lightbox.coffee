@@ -112,6 +112,15 @@ Polymer
 			popup.remove()
 		), 300
 
+	_getRatio: ->
+		module = this
+		windowRect = module.window.getBoundingClientRect()
+
+		if windowRect.width > windowRect.height
+			module.window.classList.add 'landscape'
+		else
+			module.window.classList.add 'portrait'
+
 	_isAjax: ->
 		# set vars
 		module = this
@@ -141,13 +150,14 @@ Polymer
 
 		# create popup and parse content
 		@_createPopup()
+		@_getRatio()
 		@_parseAjax(module.ajaxResponse)
 
 		# add type class
 		module.window.classList.add 'paper-lightbox-popup_window-ajax'
 
 		# apply animation
-		@_openAnimation()
+		# @_openAnimation()
 
 		# close popup event
 		@_closePopup()
@@ -161,6 +171,7 @@ Polymer
 		image.onload = ->
 			# create popup and parse content
 			module._createPopup()
+			module._getRatio()
 
 			# add type class
 			module.window.classList.add 'paper-lightbox-popup_window-image'
@@ -169,7 +180,7 @@ Polymer
 			module.window.appendChild image
 
 			# apply animation
-			module._openAnimation()
+			# module._openAnimation()
 
 			# close popup event
 			module._closePopup()
@@ -183,6 +194,7 @@ Polymer
 
 		# create popup and parse content
 		@_createPopup()
+		@_getRatio()
 
 		# add type class
 		module.window.classList.add 'paper-lightbox-popup_window-inline'
@@ -191,7 +203,7 @@ Polymer
 		module.window.appendChild content.cloneNode true
 
 		# apply animation
-		@_openAnimation()
+		# @_openAnimation()
 
 		# close popup event
 		@_closePopup()
@@ -223,7 +235,8 @@ Polymer
 		module = this
 		popup = module.querySelector('.paper-lightbox-popup')
 
-		@_closeAnimation(popup)
+		# @_closeAnimation(popup)
+		popup.remove()
 
 	_closePopup: ->
 		# set vars
