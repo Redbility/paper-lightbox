@@ -3,10 +3,6 @@
 
 	&::content {
 		.paper-lightbox-popup {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			align-content: center;
 			position: fixed;
 			top: 0;
 			right: 0;
@@ -14,6 +10,15 @@
 			left: 0;
 			z-index: 999;
 			overflow: auto;
+			text-align: center;
+
+			&::before {
+				content: '';
+				display: inline-block;
+				vertical-align: middle;
+				width: 0;
+				height: 100%;
+			}
 		}
 
 		.paper-lightbox-popup_overlay {
@@ -21,6 +26,8 @@
 			background-color: #000000;
 			width: 100%;
 			height: 100%;
+			top: 0;
+			left: 0;
 			opacity: 0.6;
 			z-index: 0;
 		}
@@ -28,30 +35,50 @@
 		.paper-lightbox-popup_window {
 			position: relative;
 			display: inline-block;
-			padding: 25px 25px;
-			z-index: 1;
+			vertical-align: middle;
+			padding: 25px;
+			margin: 40px 0 20px 0;
 			background-color: #ffffff;
-			box-sizing: border-box;
 			max-width: 70%;
 			height: auto;
+			text-align: left;
+			box-sizing: border-box;
+			z-index: 1;
+
+			@media (max-width: 568px) {
+				max-width: 100%;
+				margin: 25px;
+				padding: 15px;
+			}
+
+			.paper-lightbox_iframeWrapper {
+				position: relative;
+				padding-top: 60%;
+			}
 
 			#{&}-image {
-				&.landscape {
-					img {
-						vertical-align: top;
-						max-width: 100%;
-					}
+				img {
+					vertical-align: top;
+					max-width: 100%;
+				}
+			}
+
+			#{&}-iframe {
+				width: 70%;
+				height: auto;
+				max-width: 1024px;
+
+				@media (max-width: 568px) {
+					width: calc(100% - 50px);
+					margin: 25px 25px;
 				}
 
-				&.portrait {
-					height: 80%;
-					max-width: none;
-
-					img {
-						vertical-align: top;
-						max-height: 100%;
-						max-width: 100%;
-					}
+				iframe {
+					position: absolute;
+					width: 100%;
+					height: 100%;
+					top: 0;
+					left: 0;
 				}
 			}
 		}
