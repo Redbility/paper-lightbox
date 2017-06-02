@@ -212,3 +212,16 @@ Polymer
 	onAjaxContentLoaded: ->
 
 	onImageLoaded: ->
+
+	open: ->
+		module = @
+
+		switch @_getType()
+			when 'ajax'
+				@_createAjax()
+			when 'image'
+				@_createImage()
+			when 'inline'
+				@_createInline()
+			when 'iframe'
+				@_createIframe()

@@ -1,8 +1,18 @@
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg?style=flat-square)](https://beta.webcomponents.org/element/oscarsolas/paper-lightbox)
+
 # Paper-lightbox
 
 ### Description
 
 Polymer element for launch a popup with a image, iframe, inline or ajax content.
+
+### Install
+
+First you need bower, [see their site](http://bower.io/) for details
+
+```sh
+bower install --save oscarsolas/paper-lightbox
+```
 
 ### Examples
 
@@ -30,6 +40,10 @@ A simple example of its use:
 
 <!-- LAUNCH IFRAME POPUP -->
 <paper-lightbox src="https://www.youtube.com/watch?v=assSM3rlvZ8" type="iframe">launch iframe popup</paper-lightbox>
+
+<div style="display: none;">
+  <div class="inline-content">inline content example</div>
+</div>
 ```
 
 ### Attributes
