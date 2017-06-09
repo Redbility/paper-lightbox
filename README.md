@@ -51,6 +51,8 @@ A simple example of its use:
 | Attribute Name | Functionality | Type | Default |
 |----------------|-------------|-------------|-------------|
 | type | Popup content type | String | undefined |
+| openingTime | The time of initial animation in miliseconds | Number | undefined |
+| closingTime | The time of final animation in miliseconds | Number | undefined |
 
 ### Methods
 
