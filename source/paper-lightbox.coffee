@@ -11,10 +11,20 @@ Polymer
 	_createPopup: ->
 		# set vars
 		module = this
+		if module.getAttribute('closingTime') != null && module.getAttribute('openingTime') != undefined
+			openingTime = module.getAttribute('openingTime')
+		else
+			openingTime = 0
 
 		# create container
 		container = document.createElement 'div'
 		container.classList.add 'paper-lightbox-popup'
+
+		# opening animation
+		container.classList.add('opening')
+		setTimeout (->
+			container.classList.remove('opening')
+		), openingTime
 
 		# create close button
 		close = document.createElement 'iron-icon'
@@ -80,6 +90,15 @@ Polymer
 		# close popup event
 		@_closePopup()
 
+		# block page scroll
+		# window.addEventListener 'touchmove', (e) ->
+		# 	console.dir(e.target.className.indexOf('paper-lightbox-popup_window'))
+		# 	if module.querySelectorAll('.paper-lightbox-popup').length > 0
+		# 		if e.target.className.indexOf('paper-lightbox-popup_window') < 0
+		# 			e.preventDefault()
+
+		document.body.style.overflow = 'hidden'
+
 	_createImage: ->
 		# set vars
 		module = this
@@ -105,6 +124,15 @@ Polymer
 
 		image.src = module.getAttribute 'src'
 
+		# block page scroll
+		# window.addEventListener 'touchmove', (e) ->
+		# 	console.dir(e.target.className.indexOf('paper-lightbox-popup_window'))
+		# 	if module.querySelectorAll('.paper-lightbox-popup').length > 0
+		# 		if e.target.className.indexOf('paper-lightbox-popup_window') < 0
+		# 			e.preventDefault()
+
+		document.body.style.overflow = 'hidden'
+
 	_createIframe: ->
 		# set vars
 		module = this
@@ -120,9 +148,9 @@ Polymer
 
 		# if url is a youtube web
 		if url.indexOf('youtube.com/watch?v=') > -1
-			iframe.setAttribute 'src', newYtbUrl
+			iframe.setAttribute 'src', newYtbUrl + '?autoplay=1'
 		else
-			iframe.setAttribute 'src', url
+			iframe.setAttribute 'src', url + '?autoplay=1'
 
 		# create popup and parse content
 		@_createPopup()
@@ -131,11 +159,23 @@ Polymer
 		module.window.classList.add 'paper-lightbox-popup_window-iframe'
 
 		# append iframe
-		iframeWrapper.appendChild iframe
-		module.window.appendChild iframeWrapper
+		setTimeout (->
+			iframeWrapper.appendChild iframe
+			module.window.appendChild iframeWrapper
+		), 100
+
 
 		# close popup event
 		@_closePopup()
+
+		# block page scroll
+		# window.addEventListener 'touchmove', (e) ->
+		# 	console.dir(e.target.className.indexOf('paper-lightbox-popup_window'))
+		# 	if module.querySelectorAll('.paper-lightbox-popup').length > 0
+		# 		if e.target.className.indexOf('paper-lightbox-popup_window') < 0
+		# 			e.preventDefault()
+
+		document.body.style.overflow = 'hidden'
 
 	_createInline: ->
 		# set vars
@@ -154,6 +194,15 @@ Polymer
 		# close popup event
 		@_closePopup()
 
+		# block page scroll
+		# window.addEventListener 'touchmove', (e) ->
+		# 	console.dir(e.target.className.indexOf('paper-lightbox-popup_window'))
+		# 	if module.querySelectorAll('.paper-lightbox-popup').length > 0
+		# 		if e.target.className.indexOf('paper-lightbox-popup_window') < 0
+		# 			e.preventDefault()
+
+		document.body.style.overflow = 'hidden'
+
 	_getType: ->
 		# set vars
 		module = this
@@ -163,7 +212,7 @@ Polymer
 
 	_launchPopup: ->
 		# set vars
-		module = this
+		module = @
 
 		# launch each popup type
 		switch @_getType()
@@ -181,9 +230,18 @@ Polymer
 		module = this
 		popup = module.querySelector('.paper-lightbox-popup')
 		@window = undefined
+		if module.getAttribute('closingTime') != null && module.getAttribute('closingTime') != undefined
+			closingTime = module.getAttribute('closingTime')
+		else
+			closingTime = 0
 
-		# remove popup window
-		popup.remove()
+		# remove animation
+		popup.classList.add('closing')
+		setTimeout (->
+			# remove popup
+			popup.remove()
+		), closingTime
+		document.body.style.overflow = ''
 
 	_closePopup: ->
 		# set vars
@@ -207,6 +265,9 @@ Polymer
 				image.style.maxHeight = (window.innerHeight * 0.8) + 'px'
 
 	ready: ->
+		@listen window, 'WebComponentsReady', '_onLoad'
+
+	_onLoad: ->
 		@_launchPopup()
 
 	onAjaxContentLoaded: ->
