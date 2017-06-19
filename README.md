@@ -11,7 +11,7 @@ Polymer element for launch a popup with a image, iframe, inline or ajax content.
 First you need bower, [see their site](http://bower.io/) for details
 
 ```sh
-bower install --save oscarsolas/paper-lightbox
+bower install --save Redbility/paper-lightbox
 ```
 
 ### Examples
