@@ -59,3 +59,12 @@ A simple example of its use:
 | Method Name | Explanation |
 |-------------|-------------|
 | open() | Launch the popup |
+
+### Events
+
+| Method Name | Explanation |
+|-------------|-------------|
+| onbeforeopen | Calls before modal is opened |
+| onafteropen | Calls after modal is opened and its content is loaded |
+| onbeforeclose | Calls before modal is closed |
+| onafterclose | Calls after modal is closed |
