@@ -67,4 +67,4 @@ A simple example of its use:
 | onbeforeopen | Calls before modal is opened |
 | onafteropen | Calls after modal is opened and its content is loaded |
 | onbeforeclose | Calls before modal is closed |
-| onafterclose | Calls after modal is close |
+| onafterclose | Calls after modal is closed |
