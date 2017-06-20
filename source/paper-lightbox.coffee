@@ -273,10 +273,6 @@ Polymer
 	_onLoad: ->
 		@_launchPopup()
 
-		@addEventListener('onbeforeopen', ->
-			console.log('before open')
-		)
-
 	_defineCustomEvents: ->
 		# define var
 		module = @

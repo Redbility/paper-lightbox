@@ -1,6 +1,6 @@
 {
   "name": "paper-lightbox",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "authors": [
     "Óscar Solás <oscarsolas@gmail.com>"
   ],
@@ -9,7 +9,7 @@
     "paper-lightbox.html"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/oscarsolas/paper-lightbox",
+  "homepage": "https://github.com/Redbility/paper-lightbox",
   "ignore": [
     "bower_components",
     "source"
