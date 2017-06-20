@@ -45,9 +45,6 @@ Polymer
 		# container.innerHTML = module.ajaxResponse
 		module.appendChild container
 
-		# fire event after load
-		module.fireCustomEvents('onAfterLoad')
-
 	_getImageRatio: (width, height) ->
 		module = this
 
@@ -83,8 +80,8 @@ Polymer
 		# set vars
 		module = this
 
-		# fire event before load
-		@fireCustomEvents('onBeforeLoad')
+		# fire event before open
+		@_fireCustomEvents('onBeforeOpen')
 
 		# create popup and parse content
 		@_createPopup()
@@ -93,27 +90,22 @@ Polymer
 		# add type class
 		module.window.classList.add 'paper-lightbox-popup_window-ajax'
 
+		# fire event after open
+		@_fireCustomEvents('onAfterOpen')
+
 		# close popup event
 		@_closePopup()
-
-		# block page scroll
-		# window.addEventListener 'touchmove', (e) ->
-		# 	console.dir(e.target.className.indexOf('paper-lightbox-popup_window'))
-		# 	if module.querySelectorAll('.paper-lightbox-popup').length > 0
-		# 		if e.target.className.indexOf('paper-lightbox-popup_window') < 0
-		# 			e.preventDefault()
-
-		document.body.style.overflow = 'hidden'
 
 	_createImage: ->
 		# set vars
 		module = this
 		image = new Image()
 
+		# fire event before open
+		@_fireCustomEvents('onBeforeOpen')
+
 		# create image
 		image.onload = ->
-			# fire event before load
-			@fireCustomEvents('onBeforeLoad')
 
 			# create popup and parse content
 			module._createPopup()
@@ -128,19 +120,13 @@ Polymer
 			# fire resize event
 			module._onResize()
 
+			# fire event after open
+			module._fireCustomEvents('onAfterOpen')
+
 			# close popup event
 			module._closePopup()
 
 		image.src = module.getAttribute 'src'
-
-		# block page scroll
-		# window.addEventListener 'touchmove', (e) ->
-		# 	console.dir(e.target.className.indexOf('paper-lightbox-popup_window'))
-		# 	if module.querySelectorAll('.paper-lightbox-popup').length > 0
-		# 		if e.target.className.indexOf('paper-lightbox-popup_window') < 0
-		# 			e.preventDefault()
-
-		document.body.style.overflow = 'hidden'
 
 	_createIframe: ->
 		# set vars
@@ -151,8 +137,8 @@ Polymer
 		iframe.setAttribute 'frameborder', '0'
 		iframe.setAttribute 'allowfullscreen', ''
 
-		# fire event before load
-		@fireCustomEvents('onBeforeLoad')
+		# fire event before open
+		@_fireCustomEvents('onBeforeOpen')
 
 		# create iframe wrapper
 		iframeWrapper = document.createElement('div')
@@ -176,26 +162,19 @@ Polymer
 			module.window.appendChild iframeWrapper
 		), 100
 
+		# fire event after open
+		@_fireCustomEvents('onAfterOpen')
 
 		# close popup event
 		@_closePopup()
-
-		# block page scroll
-		# window.addEventListener 'touchmove', (e) ->
-		# 	console.dir(e.target.className.indexOf('paper-lightbox-popup_window'))
-		# 	if module.querySelectorAll('.paper-lightbox-popup').length > 0
-		# 		if e.target.className.indexOf('paper-lightbox-popup_window') < 0
-		# 			e.preventDefault()
-
-		document.body.style.overflow = 'hidden'
 
 	_createInline: ->
 		# set vars
 		module = this
 		content = document.querySelector module.getAttribute 'src'
 
-		# fire event before load
-		@fireCustomEvents('onBeforeLoad')
+		# fire event before open
+		@_fireCustomEvents('onBeforeOpen')
 
 		# create popup and parse content
 		@_createPopup()
@@ -206,17 +185,11 @@ Polymer
 		# append cloned content
 		module.window.appendChild content.cloneNode true
 
+		# fire event after open
+		@_fireCustomEvents('onAfterOpen')
+
 		# close popup event
 		@_closePopup()
-
-		# block page scroll
-		# window.addEventListener 'touchmove', (e) ->
-		# 	console.dir(e.target.className.indexOf('paper-lightbox-popup_window'))
-		# 	if module.querySelectorAll('.paper-lightbox-popup').length > 0
-		# 		if e.target.className.indexOf('paper-lightbox-popup_window') < 0
-		# 			e.preventDefault()
-
-		document.body.style.overflow = 'hidden'
 
 	_getType: ->
 		# set vars
@@ -251,7 +224,7 @@ Polymer
 			closingTime = 0
 
 		# fire event before close
-		@fireCustomEvents('onBeforeClose')
+		@_fireCustomEvents('onBeforeClose')
 
 		# remove animation
 		popup.classList.add('closing')
@@ -261,7 +234,7 @@ Polymer
 			popup.remove()
 
 			# fire event after close
-			module.fireCustomEvents('onAfterClose')
+			module._fireCustomEvents('onAfterClose')
 
 		), closingTime
 		document.body.style.overflow = ''
@@ -293,43 +266,45 @@ Polymer
 		@async(->
 			setTimeout (->
 				module._onLoad()
-				module.defineCustomEvents()
+				module._defineCustomEvents()
 			), 0
 		)
 
 	_onLoad: ->
 		@_launchPopup()
 
-	defineCustomEvents: ->
+		@addEventListener('onbeforeopen', ->
+			console.log('before open')
+		)
+
+	_defineCustomEvents: ->
 		# define var
 		module = @
-		events = ['onBeforeLoad', 'onAfterLoad', 'onBeforeClose', 'onAfterClose']
+		events = ['onBeforeOpen', 'onAfterOpen', 'onBeforeClose', 'onAfterClose']
 		eventsLenght = events.length
-		i = 0
 
 		# loop to define events
-		while i < eventsLenght
-			module[events[i]] = undefined
+		[].forEach.call events, (e) ->
+			module[e] = undefined
 
 			# create custom event
 			if document.createEvent
-				module[events[i]] = document.createEvent("HTMLEvents")
-				module[events[i]].initEvent(events[i], true, true)
+				module[e] = document.createEvent('HTMLEvents')
+				module[e].initEvent(e.toLowerCase(), true, true)
 			else
-				module.events[i] = document.createEventObject()
-				module.events[i].eventType = events[i]
+				module.e = document.createEventObject()
+				module.e.eventType = e.toLowerCase()
 
-			i++
+			module[e].eventName = e.toLowerCase()
 
-	fireCustomEvents: (customEvent) ->
+	_fireCustomEvents: (customEvent) ->
 		# define var
 		module = @
 
 		if document.createEvent
 			module.dispatchEvent(module[customEvent])
 		else
-			module.fireEvent("on" + module[customEvent].eventType, module[customEvent])
-
+			module.fireEvent('on' + module[customEvent].eventType, module[customEvent])
 
 	open: ->
 		module = @
