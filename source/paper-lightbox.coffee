@@ -45,6 +45,9 @@ Polymer
 		# container.innerHTML = module.ajaxResponse
 		module.appendChild container
 
+		# fire event after load
+		module.fireCustomEvents('onAfterLoad')
+
 	_getImageRatio: (width, height) ->
 		module = this
 
@@ -80,6 +83,9 @@ Polymer
 		# set vars
 		module = this
 
+		# fire event before load
+		@fireCustomEvents('onBeforeLoad')
+
 		# create popup and parse content
 		@_createPopup()
 		@_parseAjax(module.ajaxResponse)
@@ -106,6 +112,9 @@ Polymer
 
 		# create image
 		image.onload = ->
+			# fire event before load
+			@fireCustomEvents('onBeforeLoad')
+
 			# create popup and parse content
 			module._createPopup()
 			module._getImageRatio(image.naturalWidth, image.naturalHeight)
@@ -141,6 +150,9 @@ Polymer
 		newYtbUrl = url.replace('/watch?v=', '/embed/')
 		iframe.setAttribute 'frameborder', '0'
 		iframe.setAttribute 'allowfullscreen', ''
+
+		# fire event before load
+		@fireCustomEvents('onBeforeLoad')
 
 		# create iframe wrapper
 		iframeWrapper = document.createElement('div')
@@ -181,6 +193,9 @@ Polymer
 		# set vars
 		module = this
 		content = document.querySelector module.getAttribute 'src'
+
+		# fire event before load
+		@fireCustomEvents('onBeforeLoad')
 
 		# create popup and parse content
 		@_createPopup()
@@ -235,11 +250,19 @@ Polymer
 		else
 			closingTime = 0
 
+		# fire event before close
+		@fireCustomEvents('onBeforeClose')
+
 		# remove animation
 		popup.classList.add('closing')
 		setTimeout (->
+
 			# remove popup
 			popup.remove()
+
+			# fire event after close
+			module.fireCustomEvents('onAfterClose')
+
 		), closingTime
 		document.body.style.overflow = ''
 
@@ -265,14 +288,48 @@ Polymer
 				image.style.maxHeight = (window.innerHeight * 0.8) + 'px'
 
 	ready: ->
-		@listen window, 'WebComponentsReady', '_onLoad'
+		module = @
+
+		@async(->
+			setTimeout (->
+				module._onLoad()
+				module.defineCustomEvents()
+			), 0
+		)
 
 	_onLoad: ->
 		@_launchPopup()
 
-	onAjaxContentLoaded: ->
+	defineCustomEvents: ->
+		# define var
+		module = @
+		events = ['onBeforeLoad', 'onAfterLoad', 'onBeforeClose', 'onAfterClose']
+		eventsLenght = events.length
+		i = 0
 
-	onImageLoaded: ->
+		# loop to define events
+		while i < eventsLenght
+			module[events[i]] = undefined
+
+			# create custom event
+			if document.createEvent
+				module[events[i]] = document.createEvent("HTMLEvents")
+				module[events[i]].initEvent(events[i], true, true)
+			else
+				module.events[i] = document.createEventObject()
+				module.events[i].eventType = events[i]
+
+			i++
+
+	fireCustomEvents: (customEvent) ->
+		# define var
+		module = @
+
+		if document.createEvent
+			module.dispatchEvent(module[customEvent])
+		else
+			module.fireEvent("on" + module[customEvent].eventType, module[customEvent])
+
 
 	open: ->
 		module = @
