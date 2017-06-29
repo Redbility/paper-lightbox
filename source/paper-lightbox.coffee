@@ -42,8 +42,25 @@ Polymer
 		overlay.classList.add 'paper-lightbox-popup_overlay'
 		container.appendChild overlay
 
-		# container.innerHTML = module.ajaxResponse
+		# parse container
 		module.appendChild container
+
+		# locking background scroll on mobile devices
+		html = document.documentElement
+		html.classList.add('lock')
+		lockLayer = document.createElement 'div'
+		lockLayer.classList.add('paper-lightbox-lockScroll')
+		bodyContent = document.body.children
+		bodyContentLength = bodyContent.length
+		lockLayer.style.height = '100%'
+		html.style.height = '100%'
+		document.body.style.height = '100%'
+		lockLayer.style.overflow = 'hidden'
+
+		while document.body.firstChild
+			lockLayer.appendChild document.body.firstChild
+
+		document.body.appendChild(lockLayer)
 
 	_getImageRatio: (width, height) ->
 		module = this
@@ -231,13 +248,29 @@ Polymer
 		setTimeout (->
 
 			# remove popup
-			popup.remove()
+			module.removeChild(popup)
 
 			# fire event after close
 			module._fireCustomEvents('onAfterClose')
 
 		), closingTime
 		document.body.style.overflow = ''
+
+		# remove scrolling
+		html = document.documentElement
+		html.classList.remove('lock')
+		lockLayer = document.querySelector '.paper-lightbox-lockScroll'
+		lockLayerContent = lockLayer.children
+
+		lockLayer.style.height = ''
+		html.style.height = ''
+		document.body.style.height = ''
+		lockLayer.style.overflow = ''
+
+		while lockLayer.firstChild
+			document.body.appendChild lockLayer.firstChild
+
+		document.body.removeChild(lockLayer)
 
 	_closePopup: ->
 		# set vars
