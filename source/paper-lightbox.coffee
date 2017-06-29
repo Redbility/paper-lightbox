@@ -48,6 +48,7 @@ Polymer
 		# locking background scroll on mobile devices
 		html = document.documentElement
 		html.classList.add('lock')
+		bodyScroll = document.body.scrollTop
 		lockLayer = document.createElement 'div'
 		lockLayer.classList.add('paper-lightbox-lockScroll')
 		bodyContent = document.body.children
@@ -61,6 +62,8 @@ Polymer
 			lockLayer.appendChild document.body.firstChild
 
 		document.body.appendChild(lockLayer)
+
+		lockLayer.scrollTop = bodyScroll
 
 	_getImageRatio: (width, height) ->
 		module = this
@@ -260,6 +263,7 @@ Polymer
 		html = document.documentElement
 		html.classList.remove('lock')
 		lockLayer = document.querySelector '.paper-lightbox-lockScroll'
+		lockScroll = lockLayer.scrollTop
 		lockLayerContent = lockLayer.children
 
 		lockLayer.style.height = ''
@@ -269,6 +273,10 @@ Polymer
 
 		while lockLayer.firstChild
 			document.body.appendChild lockLayer.firstChild
+
+		console.log lockLayer.scrollTop
+
+		document.body.scrollTop = lockScroll
 
 		document.body.removeChild(lockLayer)
 
