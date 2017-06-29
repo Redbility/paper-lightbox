@@ -46,9 +46,9 @@ Polymer
 		module.appendChild container
 
 		# locking background scroll on mobile devices
+		@bodyScroll = document.body.scrollTop
 		html = document.documentElement
 		html.classList.add('lock')
-		bodyScroll = document.body.scrollTop
 		lockLayer = document.createElement 'div'
 		lockLayer.classList.add('paper-lightbox-lockScroll')
 		bodyContent = document.body.children
@@ -58,12 +58,13 @@ Polymer
 		document.body.style.height = '100%'
 		lockLayer.style.overflow = 'hidden'
 
-		while document.body.firstChild
-			lockLayer.appendChild document.body.firstChild
+		while document.body.firstElementChild
+			lockLayer.appendChild document.body.firstElementChild
 
-		document.body.appendChild(lockLayer)
-
-		lockLayer.scrollTop = bodyScroll
+			if lockLayer.children.length == bodyContentLength
+				document.body.appendChild lockLayer
+				lockLayer.scrollTop = @bodyScroll
+				return
 
 	_getImageRatio: (width, height) ->
 		module = this
@@ -263,20 +264,16 @@ Polymer
 		html = document.documentElement
 		html.classList.remove('lock')
 		lockLayer = document.querySelector '.paper-lightbox-lockScroll'
-		lockScroll = lockLayer.scrollTop
 		lockLayerContent = lockLayer.children
-
 		lockLayer.style.height = ''
 		html.style.height = ''
 		document.body.style.height = ''
 		lockLayer.style.overflow = ''
 
-		while lockLayer.firstChild
-			document.body.appendChild lockLayer.firstChild
+		while lockLayer.firstElementChild
+			document.body.appendChild lockLayer.firstElementChild
 
-		console.log lockLayer.scrollTop
-
-		document.body.scrollTop = lockScroll
+		document.body.scrollTop = @bodyScroll
 
 		document.body.removeChild(lockLayer)
 
