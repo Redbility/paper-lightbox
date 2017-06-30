@@ -11,20 +11,13 @@ Polymer
 	_createPopup: ->
 		# set vars
 		module = this
-		if module.getAttribute('closingTime') != null && module.getAttribute('openingTime') != undefined
-			openingTime = module.getAttribute('openingTime')
-		else
-			openingTime = 0
 
 		# create container
-		container = document.createElement 'div'
-		container.classList.add 'paper-lightbox-popup'
+		@container = document.createElement 'div'
+		@container.classList.add 'paper-lightbox-popup'
 
 		# opening animation
-		container.classList.add('opening')
-		setTimeout (->
-			container.classList.remove('opening')
-		), openingTime
+		@container.classList.add('opening')
 
 		# create close button
 		close = document.createElement 'iron-icon'
@@ -35,36 +28,21 @@ Polymer
 		module.window = document.createElement 'div'
 		module.window.classList.add 'paper-lightbox-popup_window'
 		module.window.appendChild close
-		container.appendChild module.window
+		@container.appendChild module.window
 
 		# create overlay
 		overlay = document.createElement 'div'
 		overlay.classList.add 'paper-lightbox-popup_overlay'
-		container.appendChild overlay
+		@container.appendChild overlay
 
 		# parse container
-		module.appendChild container
+		module.appendChild @container
 
 		# locking background scroll on mobile devices
-		@bodyScroll = document.body.scrollTop
-		html = document.documentElement
-		html.classList.add('lock')
-		lockLayer = document.createElement 'div'
-		lockLayer.classList.add('paper-lightbox-lockScroll')
-		bodyContent = document.body.children
-		bodyContentLength = bodyContent.length
-		lockLayer.style.height = '100%'
-		html.style.height = '100%'
-		document.body.style.height = '100%'
-		lockLayer.style.overflow = 'hidden'
+		lockLayer = document.querySelector '.paper-lightbox-lockScroll'
 
-		while document.body.firstElementChild
-			lockLayer.appendChild document.body.firstElementChild
-
-			if lockLayer.children.length == bodyContentLength
-				document.body.appendChild lockLayer
-				lockLayer.scrollTop = @bodyScroll
-				return
+		if lockLayer == undefined || lockLayer == null
+			module._removeScrolling()
 
 	_getImageRatio: (width, height) ->
 		module = this
@@ -96,6 +74,8 @@ Polymer
 
 		# save response
 		module.ajaxResponse = data.target.lastResponse
+
+		@_createAjax()
 
 	_createAjax: ->
 		# set vars
@@ -223,8 +203,6 @@ Polymer
 		module = @
 
 		switch @_getType()
-			when 'ajax'
-				@_createAjax()
 			when 'image'
 				@_createImage()
 			when 'inline'
@@ -235,45 +213,32 @@ Polymer
 	_removePopup: ->
 		# set vars
 		module = this
-		popup = module.querySelector('.paper-lightbox-popup')
+		popup = @container
 		@window = undefined
-		if module.getAttribute('closingTime') != null && module.getAttribute('closingTime') != undefined
-			closingTime = module.getAttribute('closingTime')
-		else
-			closingTime = 0
+		closingTime = 0
+
+		if module.getAttribute('closing') != null && module.getAttribute('closing') != undefined
+			closingTime = module.getAttribute('closing')
 
 		# fire event before close
 		@_fireCustomEvents('onBeforeClose')
 
 		# remove animation
-		popup.classList.add('closing')
+		popup.classList.remove('opening')
 		setTimeout (->
+			popup.classList.add('closing')
+		), 0
+
+		setTimeout (->
+			# remove scrolling
+			module._addScrolling()
 
 			# remove popup
 			document.body.removeChild(module)
 
 			# fire event after close
 			module._fireCustomEvents('onAfterClose')
-
 		), closingTime
-		document.body.style.overflow = ''
-
-		# remove scrolling
-		html = document.documentElement
-		html.classList.remove('lock')
-		lockLayer = document.querySelector '.paper-lightbox-lockScroll'
-		lockLayerContent = lockLayer.children
-		lockLayer.style.height = ''
-		html.style.height = ''
-		document.body.style.height = ''
-		lockLayer.style.overflow = ''
-
-		while lockLayer.firstElementChild
-			document.body.appendChild lockLayer.firstElementChild
-
-		document.body.scrollTop = @bodyScroll
-
-		document.body.removeChild(lockLayer)
 
 	_closePopup: ->
 		# set vars
@@ -285,29 +250,56 @@ Polymer
 		module.listen overlay, 'tap', '_removePopup'
 		module.listen close, 'tap', '_removePopup'
 
-	_onResize: ->
-		# if popup is open
-		if @window
+	_addScrolling: ->
+		# set vars
+		html = document.documentElement
+		html.classList.remove('lock')
+		lockLayer = document.querySelector '.paper-lightbox-lockScroll'
+		lockLayerContent = lockLayer.children
 
-			# if image has portrait ratio
-			if @window.classList.contains 'portrait'
-				image = @window.querySelector('img')
+		# reset lock styles
+		lockLayer.style.height = ''
+		html.style.height = ''
+		document.body.style.height = ''
+		lockLayer.style.overflow = ''
 
-				# limits image height
-				image.style.maxHeight = (window.innerHeight * 0.8) + 'px'
+		# remove layer content
+		while lockLayer.firstElementChild
+			document.body.appendChild lockLayer.firstElementChild
 
-	ready: ->
-		module = @
+		# set scroll position
+		document.body.scrollTop = @bodyScroll
 
-		@async(->
-			setTimeout (->
-				module._defineCustomEvents()
-				module._onLoad()
-			), 0
-		)
+		# remove layer
+		document.body.removeChild(lockLayer)
+		document.body.style.overflow = ''
 
-	_onLoad: ->
-		@_launchPopup()
+	_removeScrolling: ->
+		# set vars
+		@bodyScroll = document.body.scrollTop
+		html = document.documentElement
+		html.classList.add('lock')
+		lockLayer = document.createElement 'div'
+		lockLayer.classList.add('paper-lightbox-lockScroll')
+		bodyContent = document.body.children
+		bodyContentLength = bodyContent.length
+
+		# apply lock styles
+		lockLayer.style.height = '100%'
+		html.style.height = '100%'
+		document.body.style.height = '100%'
+		lockLayer.style.overflow = 'hidden'
+
+		# inject layer
+		while document.body.firstElementChild
+			lockLayer.appendChild document.body.firstElementChild
+
+			if lockLayer.children.length == bodyContentLength
+				document.body.appendChild lockLayer
+
+				# set scroll position
+				lockLayer.scrollTop = @bodyScroll
+				return
 
 	_defineCustomEvents: ->
 		# define var
@@ -333,8 +325,35 @@ Polymer
 		# define var
 		module = @
 
+		if module[customEvent] == undefined
+			module._defineCustomEvents()
+
 		if document.createEvent
 			module.dispatchEvent(module[customEvent])
 		else
 			module.fireEvent('on' + module[customEvent].eventType, module[customEvent])
+
+	_onResize: ->
+		# if popup is open
+		if @window
+
+			# if image has portrait ratio
+			if @window.classList.contains 'portrait'
+				image = @window.querySelector('img')
+
+				# limits image height
+				image.style.maxHeight = (window.innerHeight * 0.8) + 'px'
+
+	ready: ->
+		module = @
+
+		@async(->
+			setTimeout (->
+				module._defineCustomEvents()
+				module._onLoad()
+			), 0
+		)
+
+	_onLoad: ->
+		@_launchPopup()
 

@@ -11,5 +11,5 @@
       <content></content>
     </button>
   </template>
-  <script>(function(){Polymer({is:"paper-lightbox",ready:function(){var t;return t=this,this.async(function(){return setTimeout(function(){return t._onLoad()},0)})},_createPopup:function(){var t;return t=document.createElement("paper-lightbox-popup"),t.setAttribute("type",this.getAttribute("type")),t.setAttribute("src",this.getAttribute("src")),document.body.appendChild(t)},_onLoad:function(){var t;return t=this,t.listen(t.$$("button"),"tap","_createPopup")},open:function(){return this._createPopup()}})}).call(this);</script>
+  <script>(function(){Polymer({is:"paper-lightbox",ready:function(){var t;return t=this,this.async(function(){return setTimeout(function(){return t._onLoad()},0)})},_createPopup:function(){var t;return t=document.createElement("paper-lightbox-popup"),t.setAttribute("type",this.getAttribute("type")),t.setAttribute("src",this.getAttribute("src")),t.setAttribute("closing",this.getAttribute("closing")),t.setAttribute("class",this.getAttribute("class")),document.body.appendChild(t.cloneNode())},_onLoad:function(){var t;return t=this,t.listen(t.$$("button"),"tap","_createPopup")},open:function(){return this._createPopup()},close:function(){var t;return t=document.querySelector("paper-lightbox-popup"),t._removePopup()}})}).call(this);</script>
 </dom-module>

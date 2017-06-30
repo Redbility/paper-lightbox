@@ -14,8 +14,10 @@ Polymer
 		popup = document.createElement 'paper-lightbox-popup'
 		popup.setAttribute('type', @getAttribute 'type')
 		popup.setAttribute('src', @getAttribute 'src')
+		popup.setAttribute('closing', @getAttribute 'closing')
+		popup.setAttribute('class', @getAttribute 'class')
 
-		document.body.appendChild popup
+		document.body.appendChild popup.cloneNode()
 
 	_onLoad: ->
 		module = @
@@ -24,3 +26,8 @@ Polymer
 
 	open: ->
 		@_createPopup()
+
+	close: ->
+		popup = document.querySelector 'paper-lightbox-popup'
+
+		popup._removePopup()
