@@ -7,7 +7,7 @@ dom-module(id="paper-lightbox-popup")
 	template
 		style: include paper-lightbox-popup.css
 
-		template(is="dom-if" if="{{ _isAjax() }}")
+		template(is="dom-if" if="{{ _isAjax(type) }}")
 			iron-ajax(
 				auto
 				url="{{ src }}"

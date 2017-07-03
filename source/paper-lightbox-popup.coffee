@@ -12,17 +12,22 @@ Polymer
 		# set vars
 		module = this
 
+		# remove focus of background elements
+		@_removeBackgroundFocus()
+
 		# create container
 		@container = document.createElement 'div'
 		@container.classList.add 'paper-lightbox-popup'
 
 		# opening animation
-		@container.classList.add('opening')
+		if @_getType() != 'ajax'
+			@container.classList.add('opening')
 
 		# create close button
 		close = document.createElement 'iron-icon'
 		close.classList.add 'paper-lightbox-popup_close'
 		close.setAttribute 'icon', 'icons:close'
+		close.setAttribute 'tabindex', '0'
 
 		# create window
 		module.window = document.createElement 'div'
@@ -52,11 +57,11 @@ Polymer
 		else
 			module.window.classList.add 'portrait'
 
-	_isAjax: ->
+	_isAjax: (type) ->
 		# set vars
 		module = this
 
-		if @_getType() == 'ajax'
+		if type == 'ajax'
 			return true
 
 	_parseAjax: (content) ->
@@ -67,6 +72,9 @@ Polymer
 
 		[].forEach.call capsule.children, (val, key) ->
 			module.window.appendChild val
+
+			# add animation after content is loaded
+			module.container.classList.add('opening')
 
 	_ajaxResponse: (data) ->
 		# set vars
@@ -95,7 +103,7 @@ Polymer
 		@_fireCustomEvents('onAfterOpen')
 
 		# close popup event
-		@_closePopup()
+		@_closePopupEvent()
 
 	_createImage: ->
 		# set vars
@@ -125,7 +133,7 @@ Polymer
 			module._fireCustomEvents('onAfterOpen')
 
 			# close popup event
-			module._closePopup()
+			module._closePopupEvent()
 
 		image.src = module.getAttribute 'src'
 
@@ -167,7 +175,7 @@ Polymer
 		@_fireCustomEvents('onAfterOpen')
 
 		# close popup event
-		@_closePopup()
+		@_closePopupEvent()
 
 	_createInline: ->
 		# set vars
@@ -190,7 +198,7 @@ Polymer
 		@_fireCustomEvents('onAfterOpen')
 
 		# close popup event
-		@_closePopup()
+		@_closePopupEvent()
 
 	_getType: ->
 		# set vars
@@ -216,9 +224,14 @@ Polymer
 		popup = @container
 		@window = undefined
 		closingTime = 0
-
 		if module.getAttribute('closing') != null && module.getAttribute('closing') != undefined
 			closingTime = module.getAttribute('closing')
+
+		# reset focus of background elements
+		@_resetBackgroundFocus()
+
+		# remove close event listener
+		module.unlisten document, 'keyup', '_closeWithEsc'
 
 		# fire event before close
 		@_fireCustomEvents('onBeforeClose')
@@ -240,7 +253,7 @@ Polymer
 			module._fireCustomEvents('onAfterClose')
 		), closingTime
 
-	_closePopup: ->
+	_closePopupEvent: ->
 		# set vars
 		module = this
 		overlay = module.querySelector('.paper-lightbox-popup_overlay')
@@ -249,6 +262,21 @@ Polymer
 		# add overlay listener
 		module.listen overlay, 'tap', '_removePopup'
 		module.listen close, 'tap', '_removePopup'
+
+		## Accessibility enhancements
+		# add close function if esc key is pressed
+		module._closeWithEsc = (e) ->
+			key = e.which || e.keyCode
+			if key == 27
+				module._removePopup()
+
+		module.listen document, 'keyup', '_closeWithEsc'
+
+		# add close function if press intro key when close button is focused
+		close.addEventListener 'keypress', (e) ->
+			key = e.which || e.keyCode
+			if key == 13
+				module._removePopup()
 
 	_addScrolling: ->
 		# set vars
@@ -300,6 +328,21 @@ Polymer
 				# set scroll position
 				lockLayer.scrollTop = @bodyScroll
 				return
+
+	_removeBackgroundFocus: ->
+		tabbableElements = 'a[href], area[href], input:not([disabled]), button:not([disabled]),select:not([disabled]), textarea:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable=true]'
+		elements = document.querySelectorAll tabbableElements
+
+		[].forEach.call elements, (element) ->
+			element.oldTabIndex = element.tabIndex
+			element.tabIndex = -1
+
+	_resetBackgroundFocus: ->
+		tabbableElements = 'a[href], area[href], input:not([disabled]), button:not([disabled]),select:not([disabled]), textarea:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable=true]'
+		elements = document.querySelectorAll tabbableElements
+
+		[].forEach.call elements, (element) ->
+			element.tabIndex = element.oldTabIndex
 
 	_defineCustomEvents: ->
 		# define var
