@@ -1,6 +1,7 @@
 link(rel="import" href="../polymer/polymer.html")
 link(rel="import" href="../iron-icons/iron-icons.html")
 link(rel="import" href="../iron-ajax/iron-ajax.html")
+link(rel="import" href="../paper-button/paper-button.html")
 link(rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html")
 link(rel="import" href="paper-lightbox-popup.html")
 
@@ -8,7 +9,7 @@ dom-module(id="paper-lightbox")
 	template
 		style: include paper-lightbox.css
 
-		button
+		paper-button(raised)
 			content
 
 	script: include paper-lightbox.js

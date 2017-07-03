@@ -17,12 +17,12 @@ Polymer
 		popup.setAttribute('closing', @getAttribute 'closing')
 		popup.setAttribute('class', @getAttribute 'class')
 
-		document.body.appendChild popup.cloneNode()
+		document.body.appendChild popup
 
 	_onLoad: ->
 		module = @
 
-		module.listen module.$$('button'), 'tap', '_createPopup'
+		module.listen module.$$('paper-button'), 'tap', '_createPopup'
 
 	open: ->
 		@_createPopup()
