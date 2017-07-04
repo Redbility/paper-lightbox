@@ -10,6 +10,7 @@ var pug = require('pug');
 var chalk = require('chalk');
 var sass = require('gulp-sass');
 var cleanCSS = require('gulp-clean-css');
+var gls = require('gulp-live-server');
 
 var AUTOPREFIXER_BROWSERS = [
 	'ie >= 10',
@@ -87,16 +88,19 @@ var coffeeCompile = function(path) {
 // Watch files for changes & reload
 gulp.task('serve', function() {
 	// BrowserSync config
-	browserSync.init({
-		port: 4000,
+	var server = gls('serverConfig.js');
+  server.start().then(function(result) {
+      console.log('Server exited with result:', result);
+      process.exit(result.code);
+  });
+  browserSync.init({
+		proxy: 'localhost:4000',
+		port: 8888,
 		logPrefix: 'localhost',
 		notify: true,
-		logLevel: 'silent',
-		startPath: '/paper-lightbox/demo/',
-		server: {
-			baseDir: "../../"
-		}
+		logLevel: 'silent'
 	});
+  $.watch('serverConfig.js', server.start.bind(server)); //restart my server
 
 	// Changes fire reload
 	$.watch(['../source/*.html', '!../dev/client/elements/**/*.html'], reload);
