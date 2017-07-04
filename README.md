@@ -51,7 +51,7 @@ A simple example of its use:
 | Attribute Name | Functionality | Type | Default |
 |----------------|-------------|-------------|-------------|
 | type | Popup content type | String | undefined |
-| closingTime | The time of closing animation in miliseconds | Number | undefined |
+| closing | The time of closing animation in miliseconds | Number | undefined |
 
 ### Methods
 
@@ -61,7 +61,7 @@ A simple example of its use:
 
 ### Events
 
-| Method Name | Explanation |
+| Event Name | Explanation |
 |-------------|-------------|
 | onbeforeopen | Calls before modal is opened |
 | onafteropen | Calls after modal is opened and its content is loaded |
