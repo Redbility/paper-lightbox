@@ -98,7 +98,8 @@ gulp.task('serve', function() {
 		port: 8888,
 		logPrefix: 'localhost',
 		notify: true,
-		logLevel: 'silent'
+		logLevel: 'silent',
+		startPath: '/paper-lightbox/demo/'
 	});
   $.watch('serverConfig.js', server.start.bind(server)); //restart my server
 
