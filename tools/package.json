@@ -14,7 +14,7 @@
     "gulp-load-plugins": "^1.1.0",
     "gulp-pug": "^3.0.3",
     "gulp-replace": "^0.5.4",
-    "gulp-sass": "^2.3.2",
+    "gulp-sass": "^3.0.0",
     "gulp-uglify": "^2.0.0",
     "gulp-watch": "^4.3.8",
     "pug": "^2.0.0-beta3",
