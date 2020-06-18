@@ -251,6 +251,7 @@ Polymer
 
 			# fire event after close
 			module._fireCustomEvents('onAfterClose')
+			window.scrollTo 0, 8000
 		), closingTime
 
 	_closePopupEvent: ->
